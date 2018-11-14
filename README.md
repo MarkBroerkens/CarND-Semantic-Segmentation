@@ -1,3 +1,33 @@
+# install environment on clean ubuntu 18.04
+
+sudo apt-get install git
+git clone https://github.com/MarkBroerkens/CarND-Semantic-Segmentation.git
+mkdir envs
+ sudo apt-get install virtualenv
+virtualenv envs/carnd -p python3.6
+source envs/carnd/bin/activate
+pip install tensorflow
+pip install numpy
+pip install scipy
+
+create new virtual environment
+
+
+additional required packages
+pip install tqdm
+
+prepare usage of gpu
+https://medium.com/@taylordenouden/installing-tensorflow-gpu-on-ubuntu-18-04-89a142325138
+check what driver is installed
+nvidia-smi
+
+install cuda toolkit 10.0 from nvidia
+https://developer.nvidia.com/cuda-toolkit
+
+https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux
+ 
+
+
 # Semantic Segmentation
 ### Introduction
 In this project, you'll label the pixels of a road in images using a Fully Convolutional Network (FCN).
