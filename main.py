@@ -54,31 +54,28 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     :param num_classes: Number of classes to classify
     :return: The Tensor for the last layer of output
     """
-    # TODO: Implement function
-
-    vgg_layer7_out = tf.stop_gradient(vgg_layer7_out)
-    vgg_layer4_out = tf.stop_gradient(vgg_layer4_out)
-    vgg_layer3_out = tf.stop_gradient(vgg_layer3_out)
-
+    weights_initializer_stddev = 0.01
+    weights_regularized_l2 = 1e-3
+ 
     with tf.variable_scope("trainable_section"):
         layer7a_out = tf.layers.conv2d(vgg_layer7_out, num_classes, 1, 
 	                                   padding= 'same', 
-	                                   kernel_initializer= tf.random_normal_initializer(stddev=0.01),
-	                                   kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3),
+	                                   kernel_initializer= tf.random_normal_initializer(stddev=weights_initializer_stddev),
+	                                   kernel_regularizer= tf.contrib.layers.l2_regularizer(weights_regularized_l2),
 	                                   name='l1')
-	    # upsample
+	# upsample
         layer4a_in1 = tf.layers.conv2d_transpose(layer7a_out, num_classes, 4, 
 	                                             strides= (2, 2), 
 	                                             padding= 'same', 
-	                                             kernel_initializer= tf.random_normal_initializer(stddev=0.01), 
-	                                             kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3),
+	                                             kernel_initializer= tf.random_normal_initializer(stddev=weights_initializer_stddev), 
+	                                             kernel_regularizer= tf.contrib.layers.l2_regularizer(weights_regularized_l2),
 	                                             name='l2')
 	# make sure the shapes are the same!
 	# 1x1 convolution of vgg layer 4
         layer4a_in2 = tf.layers.conv2d(vgg_layer4_out, num_classes, 1, 
 	                                   padding= 'same', 
-	                                   kernel_initializer= tf.random_normal_initializer(stddev=0.01), 
-	                                   kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3),
+	                                   kernel_initializer= tf.random_normal_initializer(stddev=weights_initializer_stddev), 
+	                                   kernel_regularizer= tf.contrib.layers.l2_regularizer(weights_regularized_l2),
 	                                   name='l3')
         # skip connection (element-wise addition)
         layer4a_out = tf.add(layer4a_in1, layer4a_in2)
@@ -86,21 +83,21 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
         layer3a_in1 = tf.layers.conv2d_transpose(layer4a_out, num_classes, 4,  
 	                                             strides= (2, 2), 
 	                                             padding= 'same', 
-	                                             kernel_initializer= tf.random_normal_initializer(stddev=0.01), 
-	                                             kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3))
+	                                             kernel_initializer= tf.random_normal_initializer(stddev=weights_initializer_stddev), 
+	                                             kernel_regularizer= tf.contrib.layers.l2_regularizer(weights_regularized_l2))
         # 1x1 convolution of vgg layer 3
         layer3a_in2 = tf.layers.conv2d(vgg_layer3_out, num_classes, 1, 
 	                                   padding= 'same', 
-	                                   kernel_initializer= tf.random_normal_initializer(stddev=0.01), 
-	                                   kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3))
+	                                   kernel_initializer= tf.random_normal_initializer(stddev=weights_initializer_stddev), 
+	                                   kernel_regularizer= tf.contrib.layers.l2_regularizer(weights_regularized_l2))
         # skip connection (element-wise addition)
         layer3a_out = tf.add(layer3a_in1, layer3a_in2)
         # upsample
         nn_last_layer = tf.layers.conv2d_transpose(layer3a_out, num_classes, 16,  
 	                                               strides= (8, 8), 
 	                                               padding= 'same', 
-	                                               kernel_initializer= tf.random_normal_initializer(stddev=0.01), 
-	                                               kernel_regularizer= tf.contrib.layers.l2_regularizer(1e-3))
+	                                               kernel_initializer= tf.random_normal_initializer(stddev=weights_initializer_stddev), 
+	                                               kernel_regularizer= tf.contrib.layers.l2_regularizer(weights_regularized_l2))
         print("YY")
         print(tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "trainable_section"))
         trainable_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "trainable_section")
@@ -124,7 +121,7 @@ def optimize(nn_last_layer, correct_label, learning_rate, num_classes):
     # define loss function
     cross_entropy_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits= logits, labels= correct_label))
     # define training operation
-    global optimizer
+    #global optimizer
     optimizer = tf.train.AdamOptimizer(learning_rate= learning_rate)
 
     
@@ -156,14 +153,15 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param learning_rate: TF Placeholder for learning rate
     """
     # TODO: Implement function
-    trainable_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "trainable_section")
-    print("ZZ")
-    print(trainable_vars)
-    trainable_variable_initializers = [var.initializer for var in trainable_vars]
-    sess.run(trainable_variable_initializers)
-    sess.run(tf.variables_initializer(optimizer.variables()))
+    #trainable_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "trainable_section")
+    #print("ZZ")
+    #print(trainable_vars)
+    #trainable_variable_initializers = [var.initializer for var in trainable_vars]
+    #sess.run(trainable_variable_initializers)
+    #sess.run()
+    #sess.run(tf.variables_initializer(trainable_vars))
 
-    # sess.run(tf.global_variables_initializer())
+    sess.run(tf.global_variables_initializer())
     
     print("Training...")
     print()
@@ -184,7 +182,8 @@ tests.test_train_nn(train_nn)
 def run():
     num_classes = 2
     image_shape = (160, 576)
-    data_dir = './data'
+    data_dir = './data' # location for standalone execution
+    #data_dir = '/data' # location in Udacity workspace
     runs_dir = './runs'
     tests.test_for_kitti_dataset(data_dir)
 
@@ -204,8 +203,7 @@ def run():
         # OPTIONAL: Augment Images for better results
         #  https://datascience.stackexchange.com/questions/5224/how-to-prepare-augment-images-for-neural-network
 
-        # TODO: Build NN using load_vgg, layers, and optimize function
-        
+        # Build NN using load_vgg, layers, and optimize function
         correct_label = tf.placeholder(tf.int32, [None, None, None, num_classes], name='correct_label')
         learning_rate = tf.placeholder(tf.float32, name='learning_rate')
 
@@ -213,17 +211,17 @@ def run():
         nn_last_layer = layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes)
 
         logits, train_op, cross_entropy_loss = optimize(nn_last_layer, correct_label, learning_rate, num_classes)
-        # TODO: Train NN using the train_nn function
         
+
+        # Train NN using the train_nn function
         epochs = 50
         batch_size = 3
 
         train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_loss, input_image,
                  correct_label, keep_prob, learning_rate)
 
-        # TODO: Save inference data using helper.save_inference_samples
+        # Save inference data using helper.save_inference_samples
         #  helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
-
         helper.save_inference_samples(runs_dir, data_dir, sess, image_shape, logits, keep_prob, input_image)
 
 

@@ -1,32 +1,65 @@
-# install environment on clean ubuntu 18.04
+[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
-sudo apt-get install git
-git clone https://github.com/MarkBroerkens/CarND-Semantic-Segmentation.git
-mkdir envs
- sudo apt-get install virtualenv
-virtualenv envs/carnd -p python3.6
-source envs/carnd/bin/activate
-pip install tensorflow
-pip install numpy
-pip install scipy
+# The Project
+In this project, I label the pixels of a road in images using a Fully Convolutional Network (FCN).
 
-create new virtual environment
+# Architecture
+The approach uses the [FCN-8](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf) architecture developed at Berkeley. The encoder for FCN-8 is the [VGG16](https://s3-us-west-1.amazonaws.com/udacity-selfdrivingcar/vgg.zip) model pretrained on ImageNet for classification of classes such as differnt animals, vehicles, etc. 
+The fully-connected layers of the pretrained VGG16 are replaced by 1-by-1 convolutions. 
 
+The decoder portion of the FCN-8 upsamples the input to the original image size.
+Example:
+```python
+# upsample
+layer4a_in1 = tf.layers.conv2d_transpose(layer7a_out, num_classes, 4, 
+	                                 strides= (2, 2), 
+	                                 padding= 'same', 
+	                                 kernel_initializer=tf.random_normal_initializer(stddev=weights_initializer_stddev), 
+	                                 kernel_regularizer= tf.contrib.layers.l2_regularizer(weights_regularized_l2),
+	                                 name='l2')
+```
 
-additional required packages
-pip install tqdm
+In order to preserve information on where a specific class is located in the input image, skip conections are added. 
+```python
+# make sure the shapes are the same!
+# 1x1 convolution of vgg layer 4
+layer4a_in2 = tf.layers.conv2d(
+          vgg_layer4_out, num_classes, 1, 
+	  padding= 'same', 
+	  kernel_initializer= tf.random_normal_initializer(stddev=weights_initializer_stddev), 
+	  kernel_regularizer= tf.contrib.layers.l2_regularizer(weights_regularized_l2),
+	  name='l3')
+# skip connection (element-wise addition)
+layer4a_out = tf.add(layer4a_in1, layer4a_in2)
+```
 
-prepare usage of gpu
-https://medium.com/@taylordenouden/installing-tensorflow-gpu-on-ubuntu-18-04-89a142325138
-check what driver is installed
-nvidia-smi
+# Training
+The FCN-8 network is trained on the [Kitti Road dataset](http://www.cvlibs.net/datasets/kitti/eval_road.php) from [here](http://www.cvlibs.net/download.php?file=data_road.zip). Which proves road images and related labels which describe which part of the road is considered as road (pink) and non-road (red). Additionally, the label describe other roads in black. However, we only use the pink parts as road and all other labels as non-road.
 
-install cuda toolkit 10.0 from nvidia
-https://developer.nvidia.com/cuda-toolkit
-
-https://linuxconfig.org/how-to-install-the-nvidia-drivers-on-ubuntu-18-04-bionic-beaver-linux
+Example of original road:
+![Original Road](images/um_000000.png)
  
+Example of original road:
+![Label](images/um_lane_000000.png)
 
+
+# Computing the network
+## First attempt: NVIDIA GeForce GTX 680MX of my iMac
+Since the the Udacity classroom highly recommended to use a GPU I thought that I could use the NVIDIA GPU of my iMac.
+Thus I set up ubuntu linux, installed the the latest [NVIDIA drivers, cuda 10, cudnn 7 and tensorflow-gpu 1.12](https://medium.com/@taylordenouden/installing-tensorflow-gpu-on-ubuntu-18-04-89a142325138).
+After two days of installation I found out that tensorflow-gpu 1.12 requires cuda lavel 3.5 whereas my old GPU only provided 3.0.
+
+## Second attempt: NVIDIA Xavier development kit
+I then set up my Nvidia Xavier development kit, that provided much more up to date hardware.
+However, it still took about 6 Minutes per epoche.
+
+## Third attempt: Udacity Workspace
+The Udacity Workspace provides an Nvidia Tesla K80 GPU, which helped to calculate 50 epochs whith batch size 3 in less than an hour. 
+
+
+---------------------------------------------------------------------------------
+
+*the description below is Udacity's original README for the project repo*
 
 # Semantic Segmentation
 ### Introduction
