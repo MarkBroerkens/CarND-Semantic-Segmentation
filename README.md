@@ -42,8 +42,37 @@ Example of original road:
 Example of original road:
 ![Label](images/um_lane_000000.png)
 
+The hyperparameters used for training are:
 
-# Computing the network
+* keep_prob: 0.5
+* learning_rate: 0.0009
+* epochs: 50
+* batch_size: 3
+
+
+# Results
+The predictions worked pretty well. However, there are some regions which are incorrectly marked as road or non-road.
+![](images/uu_000005.png)
+![](images/uu_000012.png)
+![](images/uu_000027.png)
+![](images/uu_000047.png)
+![](images/uu_000050.png)
+![](images/uu_000058.png)
+![](images/uu_000062.png)
+![](images/uu_000090.png)
+![](images/uu_000093.png)
+
+
+# Possible improvements
+* Augmentation: We could add further training data by
+  - flipping the images and their lables
+  - increasing / decreasing the brightness of the images
+  - shifting the images and the labels
+
+* Freezing the the weights of the pretrained layers we used in in our FCN-8 network.
+ 
+
+# Some remarks on setting up the encironment for GPU computing
 ## First attempt: NVIDIA GeForce GTX 680MX of my iMac
 Since the the Udacity classroom highly recommended to use a GPU I thought that I could use the NVIDIA GPU of my iMac.
 Thus I set up ubuntu linux, installed the the latest [NVIDIA drivers, cuda 10, cudnn 7 and tensorflow-gpu 1.12](https://medium.com/@taylordenouden/installing-tensorflow-gpu-on-ubuntu-18-04-89a142325138).

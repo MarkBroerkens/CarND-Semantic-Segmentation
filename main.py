@@ -152,15 +152,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
     :param keep_prob: TF Placeholder for dropout keep probability
     :param learning_rate: TF Placeholder for learning rate
     """
-    # TODO: Implement function
-    #trainable_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "trainable_section")
-    #print("ZZ")
-    #print(trainable_vars)
-    #trainable_variable_initializers = [var.initializer for var in trainable_vars]
-    #sess.run(trainable_variable_initializers)
-    #sess.run()
-    #sess.run(tf.variables_initializer(trainable_vars))
-
+    
     sess.run(tf.global_variables_initializer())
     
     print("Training...")
