@@ -3,7 +3,7 @@
 # The Project
 In this project, I label the pixels of a road in images using a Fully Convolutional Network (FCN).
 
-# Architecture
+## Architecture
 The approach uses the [FCN-8](https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf) architecture developed at Berkeley. The encoder for FCN-8 is the [VGG16](https://s3-us-west-1.amazonaws.com/udacity-selfdrivingcar/vgg.zip) model pretrained on ImageNet for classification of classes such as differnt animals, vehicles, etc. 
 The fully-connected layers of the pretrained VGG16 are replaced by 1-by-1 convolutions. 
 
@@ -33,7 +33,7 @@ layer4a_in2 = tf.layers.conv2d(
 layer4a_out = tf.add(layer4a_in1, layer4a_in2)
 ```
 
-# Training
+## Training
 The FCN-8 network is trained on the [Kitti Road dataset](http://www.cvlibs.net/datasets/kitti/eval_road.php) from [here](http://www.cvlibs.net/download.php?file=data_road.zip). Which proves road images and related labels which describe which part of the road is considered as road (pink) and non-road (red). Additionally, the label describe other roads in black. However, we only use the pink parts as road and all other labels as non-road.
 
 Example of original road:
@@ -50,7 +50,7 @@ The hyperparameters used for training are:
 * batch_size: 3
 
 
-# Results
+## Results
 The predictions worked pretty well. However, there are some regions which are incorrectly marked as road or non-road.
 ![](images/uu_000005.png)
 ![](images/uu_000012.png)
@@ -63,7 +63,7 @@ The predictions worked pretty well. However, there are some regions which are in
 ![](images/uu_000093.png)
 
 
-# Possible improvements
+## Possible improvements
 * Augmentation: We could add further training data by
   - flipping the images and their lables
   - increasing / decreasing the brightness of the images
@@ -72,17 +72,17 @@ The predictions worked pretty well. However, there are some regions which are in
 * Freezing the the weights of the pretrained layers we used in in our FCN-8 network.
  
 
-# Some remarks on setting up the encironment for GPU computing
-## First attempt: NVIDIA GeForce GTX 680MX of my iMac
+## Some remarks on setting up the encironment for GPU computing
+### First attempt: NVIDIA GeForce GTX 680MX of my iMac
 Since the the Udacity classroom highly recommended to use a GPU I thought that I could use the NVIDIA GPU of my iMac.
 Thus I set up ubuntu linux, installed the the latest [NVIDIA drivers, cuda 10, cudnn 7 and tensorflow-gpu 1.12](https://medium.com/@taylordenouden/installing-tensorflow-gpu-on-ubuntu-18-04-89a142325138).
 After two days of installation I found out that tensorflow-gpu 1.12 requires cuda lavel 3.5 whereas my old GPU only provided 3.0.
 
-## Second attempt: NVIDIA Xavier development kit
+### Second attempt: NVIDIA Xavier development kit
 I then set up my Nvidia Xavier development kit, that provided much more up to date hardware.
 However, it still took about 6 Minutes per epoche.
 
-## Third attempt: Udacity Workspace
+### Third attempt: Udacity Workspace
 The Udacity Workspace provides an Nvidia Tesla K80 GPU, which helped to calculate 50 epochs whith batch size 3 in less than an hour. 
 
 
