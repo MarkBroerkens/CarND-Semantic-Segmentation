@@ -86,6 +86,13 @@ However, it still took about 6 Minutes per epoche.
 The Udacity Workspace provides an Nvidia Tesla K80 GPU, which helped to calculate 50 epochs whith batch size 3 in less than an hour. 
 
 
+## Further Reading
+* [A 2017 Guide to Semantic Segmentation with Deep Learning](http://blog.qure.ai/notes/semantic-segmentation-deep-learning-review)
+* [Dense-Segmentation: Pyramid Scene Parsing (PSPnet)](https://medium.com/@steve101777/dense-segmentation-pyramid-scene-parsing-pspnet-753b1cb6097c)
+* [Skip Layer](https://arxiv.org/pdf/1411.4038.pdf)
+* [Weight Initialization](http://cs231n.github.io/neural-networks-2/#init)
+* [Regularization](http://cs231n.github.io/neural-networks-2/#reg)
+
 ---------------------------------------------------------------------------------
 
 *the description below is Udacity's original README for the project repo*
